@@ -10,7 +10,7 @@
 var async = require('async');
 var https = require('https');
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';   // http://stackoverflow.com/a/21961005/1150427
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; // http://stackoverflow.com/a/21961005/1150427
 var isDevelopment = !process.env.NODE_ENV ? true : process.env.NODE_ENV === 'development';
 
 const HOST = 'dsdev.lan';
@@ -62,7 +62,7 @@ function _httpsGet(url, next) {
 
 function _isTokenValid(next) {
     // bypass http query if token haven't expire
-    if (lastAccess > new Date().valueOf() - 60000) {
+    if (lastAccess > Date.now() - 60000) {
         console.log(`  [dsConnector] SKIP http token check`);
         return next(null, true);
     }
@@ -84,16 +84,12 @@ function _refreshToken(next) {
     });
 }
 
-function _successCallUpdateTime(json, next) {
-    lastAccess = new Date().valueOf();
-    next(null, json);
-}
-
 module.exports = function(href, next) {
     async.waterfall([
         _isTokenValid,
         function(valid, next) {
             if (valid) {
+                lastAccess = Date.now();
                 return next();
             }
             _refreshToken(next);
@@ -103,6 +99,9 @@ module.exports = function(href, next) {
             var url = `https://${HOST}:${PORT}${href}${symbol}token=${token}`;
             _httpsGet(url, next);
         },
-        _successCallUpdateTime
+        function(json, next) {
+            lastAccess = Date.now();
+            next(null, json);
+        }
     ], next);
 };
