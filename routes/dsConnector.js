@@ -34,6 +34,9 @@ function _httpsGet(url, next) {
                     data += d;
                 })
                 .on('end', function() {
+                    if (res.statusCode !== 200) {
+                        return next(new Error(`DS Server Response ${res.statusCode}: ${data}`));
+                    }
                     var json = JSON.parse(data) || '';
                     if (!json.ok) {
                         return next(new Error(`DS Server Response ${res.statusCode}: ${json.message}`));
