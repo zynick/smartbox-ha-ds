@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var dsAPI = require('./routes/ds-api');
+var dsGetLastCallSceneName = require('./routes/ds-getLastCallSceneName');
 
 var app = express();
 
@@ -29,7 +30,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/ds-api', dsAPI);
+app.use('/ds/api', dsAPI);
+app.use('/ds/getLastCallSceneName', dsGetLastCallSceneName);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
