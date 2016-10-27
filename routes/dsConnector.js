@@ -7,11 +7,11 @@
  * Ensure connectivity by get/refresh token automatically
  */
 
+const debug = require('debug')('app:dsConnector');
 var async = require('async');
 var https = require('https');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; // http://stackoverflow.com/a/21961005/1150427
-var isDevelopment = !process.env.NODE_ENV ? true : process.env.NODE_ENV === 'development';
 
 const HOST = 'dsdev.lan';
 const PORT = 8080;
@@ -23,9 +23,7 @@ var lastAccess = 0;
 
 
 function _httpsGet(url, next) {
-    if (isDevelopment) {
-        console.log(`  [dsConnector] ${url}`);
-    }
+    debug(url);
     https
         .get(url, function(res) {
             var data = '';
@@ -41,9 +39,7 @@ function _httpsGet(url, next) {
                     if (!json.ok) {
                         return next(new Error(`DS Server Response ${res.statusCode}: ${json.message}`));
                     }
-                    if (isDevelopment) {
-                        console.log(`  [dsConnector] ${JSON.stringify(json)}`);
-                    }
+                    debug(JSON.stringify(json));
                     next(null, json);
                 })
                 .on('error', next);
@@ -52,9 +48,7 @@ function _httpsGet(url, next) {
         .on('socket', function(socket) {
             socket.setTimeout(HTTP_Timeout);
             socket.on('timeout', function() {
-                if (isDevelopment) {
-                    console.log(`  [dsConnector] [TIMEOUT] ${url}`);
-                }
+                debug(`[TIMEOUT] ${url}`);
                 next(new Error(`request timeout: ${url}`));
             });
         });
@@ -63,10 +57,10 @@ function _httpsGet(url, next) {
 function _isTokenValid(next) {
     // bypass http query if token haven't expire
     if (lastAccess > Date.now() - 60000) {
-        console.log(`  [dsConnector] SKIP http token check`);
+        debug('SKIP http token check');
         return next(null, true);
     }
-    console.log(`  [dsConnector] http token check`);
+    debug('http token check');
     var url = `https://${HOST}:${PORT}/json/apartment/getName?token=${token}`;
     _httpsGet(url, function(err) {
         next(null, !err);
