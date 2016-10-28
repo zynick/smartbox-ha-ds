@@ -11,20 +11,17 @@ const debug = require('debug')('app:dsConnector');
 const async = require('async');
 const https = require('https');
 
+const {
+    host,
+    port,
+    appToken
+} = require('../config.json');
+
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; // http://stackoverflow.com/a/21961005/1150427
-
-// TODO move this out
-// TODO move this out
-// TODO move this out
-// TODO move this out
-
-const HOST = 'dsdev.lan';
-const PORT = 8080;
-const APP_TOKEN = 'e0ad6da9aa1cb79337d6b88eb8555706f4785b8dbc61ca0e4ef39b7270a300f0';
-const HTTP_Timeout = 30 * 10000; // 30 seconds
 
 let token;
 let lastAccess = 0;
+
 
 const httpsGet = (url, next) => {
     debug(url);
@@ -51,7 +48,7 @@ const httpsGet = (url, next) => {
         })
         .on('error', next)
         .on('socket', (socket) => {
-            socket.setTimeout(HTTP_Timeout);
+            socket.setTimeout(30 * 1000); // 30 seconds;
             socket.on('timeout', () => next(new Error(`request timeout: ${url}`)));
         });
 };
@@ -66,7 +63,7 @@ module.exports = (href, next) => {
             }
 
             // check if token expired
-            const url = `https://${HOST}:${PORT}/json/apartment/getName?token=${token}`;
+            const url = `https://${host}:${port}/json/apartment/getName?token=${token}`;
             httpsGet(url, (err) => next(null, !err));
         },
         (valid, next) => {
@@ -76,7 +73,7 @@ module.exports = (href, next) => {
 
             // refresh (get new) token
             debug('* refresh token');
-            const url = `https://${HOST}:${PORT}/json/system/loginApplication?loginToken=${APP_TOKEN}`;
+            const url = `https://${host}:${port}/json/system/loginApplication?loginToken=${appToken}`;
             httpsGet(url, (err, json) => {
                 if (err) {
                     return next(err);
@@ -88,7 +85,7 @@ module.exports = (href, next) => {
         (next) => {
             // query
             const symbol = href.indexOf('?') === -1 ? '?' : '&';
-            const url = `https://${HOST}:${PORT}${href}${symbol}token=${token}`;
+            const url = `https://${host}:${port}${href}${symbol}token=${token}`;
             httpsGet(url, next);
         },
         (json, next) => {
