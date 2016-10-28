@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/', (req, res) => {
     res.render('index', {
-        title: 'Home Assistant - digitalSTROM'
+        title: 'Home Assistant - digitalSTROM API'
     });
 });
 

@@ -1,19 +1,23 @@
-var express = require('express');
-var https = require('https');
-var router = express.Router();
-var connector = require('./dsConnector');
+'use strict';
 
+const express = require('express');
+const https = require('https');
+const router = express.Router();
+const connector = require('./dsConnector');
 
-router.get('/', function(req, res, next) {
+router.get('/', (req, res) => {
 
-    let path = req.query.path || '';
+    const path = req.query.path || '';
 
-    connector(path, function(err, json) {
+    connector(path, (err, json) => {
         if (err) {
-          res.json({ ok: false, message: err.message });
-        } else {
-          res.json(json);
+            return res.json({
+                ok: false,
+                message: err.message
+            });
         }
+
+        res.json(json);
     });
 
 });

@@ -1,99 +1,97 @@
 'use strict';
 
-// https://gitlab.com/smartboxasia/event-server/blob/master/api/dsConnector.js
-
 /**
  * Trigger URL to dS server and
- * Ensure connectivity by get/refresh token automatically
+ * Ensure connectivity by refresh session token automatically
  */
 
+// copy & modify from https://gitlab.com/smartboxasia/event-server/blob/master/api/dsConnector.js
+
 const debug = require('debug')('app:dsConnector');
-var async = require('async');
-var https = require('https');
+const async = require('async');
+const https = require('https');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; // http://stackoverflow.com/a/21961005/1150427
+
+// TODO move this out
+// TODO move this out
+// TODO move this out
+// TODO move this out
 
 const HOST = 'dsdev.lan';
 const PORT = 8080;
 const APP_TOKEN = 'e0ad6da9aa1cb79337d6b88eb8555706f4785b8dbc61ca0e4ef39b7270a300f0';
 const HTTP_Timeout = 30 * 10000; // 30 seconds
 
-var token;
-var lastAccess = 0;
+let token;
+let lastAccess = 0;
 
-
-function _httpsGet(url, next) {
+const httpsGet = (url, next) => {
     debug(url);
+
     https
-        .get(url, function(res) {
-            var data = '';
+        .get(url, (res) => {
+            let data = '';
             res
-                .on('data', function(d) {
-                    data += d;
-                })
-                .on('end', function() {
+                .on('data', d => data += d)
+                .on('end', () => {
                     if (res.statusCode !== 200) {
                         return next(new Error(`DS Server Response ${res.statusCode}: ${data}`));
                     }
-                    var json = JSON.parse(data) || '';
+
+                    const json = JSON.parse(data) || '';
                     if (!json.ok) {
                         return next(new Error(`DS Server Response ${res.statusCode}: ${json.message}`));
                     }
+
                     debug(JSON.stringify(json));
                     next(null, json);
                 })
                 .on('error', next);
         })
         .on('error', next)
-        .on('socket', function(socket) {
+        .on('socket', (socket) => {
             socket.setTimeout(HTTP_Timeout);
-            socket.on('timeout', function() {
-                debug(`[TIMEOUT] ${url}`);
-                next(new Error(`request timeout: ${url}`));
-            });
+            socket.on('timeout', () => next(new Error(`request timeout: ${url}`)));
         });
-}
+};
 
-function _isTokenValid(next) {
-    // bypass http query if token haven't expire
-    if (lastAccess > Date.now() - 60000) {
-        debug('SKIP http token check');
-        return next(null, true);
-    }
-    debug('http token check');
-    var url = `https://${HOST}:${PORT}/json/apartment/getName?token=${token}`;
-    _httpsGet(url, function(err) {
-        next(null, !err);
-    });
-}
-
-function _refreshToken(next) {
-    var url = `https://${HOST}:${PORT}/json/system/loginApplication?loginToken=${APP_TOKEN}`;
-    _httpsGet(url, function(err, json) {
-        if (err) {
-            return next(err);
-        }
-        token = json.result.token;
-        next();
-    });
-}
-
-module.exports = function(href, next) {
+module.exports = (href, next) => {
     async.waterfall([
-        _isTokenValid,
-        function(valid, next) {
-            if (valid) {
-                lastAccess = Date.now();
-                return next();
+        (next) => {
+            // token is not expired if last used < 60 seconds
+            if (lastAccess > Date.now() - 60000) {
+                debug('* skip token validation');
+                return next(null, true);
             }
-            _refreshToken(next);
+
+            // check if token expired
+            const url = `https://${HOST}:${PORT}/json/apartment/getName?token=${token}`;
+            httpsGet(url, (err) => next(null, !err));
         },
-        function(next) {
-            var symbol = href.indexOf('?') === -1 ? '?' : '&';
-            var url = `https://${HOST}:${PORT}${href}${symbol}token=${token}`;
-            _httpsGet(url, next);
+        (valid, next) => {
+            if (valid) {
+                return next(); // token not expired, skip
+            }
+
+            // refresh (get new) token
+            debug('* refresh token');
+            const url = `https://${HOST}:${PORT}/json/system/loginApplication?loginToken=${APP_TOKEN}`;
+            httpsGet(url, (err, json) => {
+                if (err) {
+                    return next(err);
+                }
+                token = json.result.token;
+                next();
+            });
         },
-        function(json, next) {
+        (next) => {
+            // query
+            const symbol = href.indexOf('?') === -1 ? '?' : '&';
+            const url = `https://${HOST}:${PORT}${href}${symbol}token=${token}`;
+            httpsGet(url, next);
+        },
+        (json, next) => {
             lastAccess = Date.now();
             next(null, json);
         }
