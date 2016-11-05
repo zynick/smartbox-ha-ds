@@ -58,7 +58,7 @@ module.exports = (href, next) => {
         (next) => {
             // token is not expired if last used < 60 seconds
             if (lastAccess > Date.now() - 60000) {
-                debug('* skip token validation');
+                debug(' * skip token validation');
                 return next(null, true);
             }
 
@@ -72,7 +72,7 @@ module.exports = (href, next) => {
             }
 
             // refresh (get new) token
-            debug('* refresh token');
+            debug(' * refresh token');
             const url = `https://${host}:${port}/json/system/loginApplication?loginToken=${appToken}`;
             httpsGet(url, (err, json) => {
                 if (err) {
