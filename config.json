@@ -1,5 +1,6 @@
 {
-    "host": "dsdev.lan",
+    "name": "plaza33 showroom configuration",
+    "host": "dss.local",
     "port": "8080",
-    "appToken": "e0ad6da9aa1cb79337d6b88eb8555706f4785b8dbc61ca0e4ef39b7270a300f0"
+    "appToken": "94d0cd933b96e9176bef68f7bd6be746c135c286fa6b58884283ed3eb3bd8956"
 }
