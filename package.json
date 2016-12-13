@@ -3,8 +3,8 @@
     "version": "0.0.1",
     "private": true,
     "scripts": {
-        "dev": "DEBUG=app:* /usr/local/bin/node ./bin/www",
-        "start": "DEBUG=app:error /usr/local/bin/node ./bin/www"
+        "dev": "DEBUG=app:* node ./bin/www",
+        "start": "DEBUG=app:error node ./bin/www"
     },
     "dependencies": {
         "body-parser": "~1.13.2",
