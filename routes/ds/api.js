@@ -3,7 +3,7 @@
 const express = require('express');
 const https = require('https');
 const router = express.Router();
-const connector = require('./dsConnector');
+const connector = require('../../utils/connector');
 
 router.get('/', (req, res) => {
 

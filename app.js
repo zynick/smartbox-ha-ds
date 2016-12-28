@@ -6,9 +6,9 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
-const routes = require('./routes/index');
-const dsAPI = require('./routes/ds-api');
-const dsGetLastCallSceneName = require('./routes/ds-getLastCallSceneName');
+const index = require('./routes/index');
+const dsApi = require('./routes/ds/api');
+const dsGetLastCallSceneName = require('./routes/ds/getLastCallSceneName');
 
 const app = express();
 
@@ -30,8 +30,8 @@ app.use(bodyParser.text({
     type: req => req.headers['content-type'] === 'text/plain' || req.headers['accept-encoding'] === 'gzip, deflate'
 }));
 app.use(cookieParser());
-app.use('/', routes);
-app.use('/ds/api', dsAPI);
+app.use('/', index);
+app.use('/ds/api', dsApi);
 app.use('/ds/getLastCallSceneName', dsGetLastCallSceneName);
 
 

@@ -7,7 +7,7 @@
 
 // copy & modify from https://gitlab.com/smartboxasia/event-server/blob/master/api/dsConnector.js
 
-const debug = require('debug')('app:dsConnector');
+const debug = require('debug')('app:connector');
 const async = require('async');
 const https = require('https');
 
