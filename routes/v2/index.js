@@ -4,15 +4,7 @@ const express = require('express');
 const router = express.Router();
 const isProd = express().get('env') === 'production';
 
-const getStructure = require('./getStructure');
-
-router.get('/', (req, res) => {
-    res.render('index', {
-        title: 'HA-dS v2'
-    });
-});
-
-router.use('/getStructure', getStructure);
+router.use('/getStructure', require('./getStructure'));
 
 /* Catch 404 and Forward to Error Handler */
 router.use((req, res, next) => {

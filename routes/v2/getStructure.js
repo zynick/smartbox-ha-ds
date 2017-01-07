@@ -5,22 +5,14 @@ const https = require('https');
 const router = express.Router();
 const connector = require('../../utils/connector');
 
-router.get('/', (req, res) => {
+router.get('/', (req, res, next) => {
 
     // 1. get apartment structure
     let path = `/json/apartment/getStructure`;
     connector(path, (err, json) => {
         if (err) {
-            return res.json({
-                ok: false,
-                message: err.message
-            });
+            return next(err);
         }
-
-        if (!json.ok) {
-            return res.json(json);
-        }
-
 
         let {
             clusters,

@@ -22,10 +22,6 @@ router.get('/', (req, res) => {
             });
         }
 
-        if (!json.ok) {
-            return res.json(json);
-        }
-
         const scene = json.result.scene;
 
         // 2. get scene name

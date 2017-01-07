@@ -33,12 +33,12 @@ const httpsGet = (url, next) => {
                 .on('data', d => data += d)
                 .on('end', () => {
                     if (res.statusCode !== 200) {
-                        return next(new Error(`DS Server Response ${res.statusCode}: ${data}`));
+                        return next(new Error(`dS Response ${res.statusCode}: ${data}`));
                     }
 
                     const json = JSON.parse(data) || '';
                     if (!json.ok) {
-                        return next(new Error(`DS Server Response ${res.statusCode}: ${json.message}`));
+                        return next(new Error(`dS Response ${res.statusCode}: ${json.message}`));
                     }
 
                     debug(JSON.stringify(json));
