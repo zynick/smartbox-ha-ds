@@ -28,15 +28,15 @@ router.get('/', (req, res) => {
         } = json.result.apartment;
 
         const isPresent = value => value.isPresent;
-
         const notBroadcast = value => value.id !== 0;
+
+        let _zones = [];
 
         zones
             .filter(notBroadcast)
             .forEach(zone => {
 
                 let presentDevices = zone.devices.filter(isPresent);
-
                 let groups = zone.groups
                     .filter(notBroadcast)
                     .filter(isPresent)
@@ -49,17 +49,27 @@ router.get('/', (req, res) => {
                         });
                     });
 
-                const zoneName = zone.name.length > 0 ? zone.name : `Room #${zone.id}`;
-
-                // show existing live zones & groups
-                console.log(`Active Zone: ${zoneName}`);
+                let _groups = [];
                 groups.forEach(group => {
-                    console.log(`    Active Group: ${group.name}`);
+                    _groups.push({
+                        id: group.id,
+                        name: group.name,
+                        color: group.color
+                    });
                 });
 
+                const zoneName = zone.name.length > 0 ? zone.name : `Room #${zone.id}`;
+                _zones.push({
+                    id: zone.id,
+                    name: zoneName,
+                    groups: _groups
+                });
             });
 
-        res.send('ok');
+        res.json({
+            zones: _zones
+        });
+
     });
 
 });
