@@ -4,15 +4,18 @@ const express = require('express');
 const router = express.Router();
 const isProd = express().get('env') === 'production';
 
+const getStructure = require('./getStructure');
+
 router.get('/', (req, res) => {
     res.render('index', {
         title: 'HA-dS v2'
     });
 });
 
+router.use('/getStructure', getStructure);
 
 /* Catch 404 and Forward to Error Handler */
-app.use((req, res, next) => {
+router.use((req, res, next) => {
     let err = new Error('Not Found');
     err.status = 404;
     next(err);

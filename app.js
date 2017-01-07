@@ -6,12 +6,7 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
-const index = require('./routes/index');
-const dsApi = require('./routes/ds/api');
-const dsGetLastCallSceneName = require('./routes/ds/getLastCallSceneName');
-const dsProcessStructure = require('./routes/ds/processStructure');
-const apiv2 = require('./routes/v2');
-
+const routes = require('./routes');
 const app = express();
 
 
@@ -32,11 +27,7 @@ app.use(bodyParser.text({
     type: req => req.headers['content-type'] === 'text/plain' || req.headers['accept-encoding'] === 'gzip, deflate'
 }));
 app.use(cookieParser());
-app.use('/', index);
-app.use('/ds/api', dsApi);
-app.use('/ds/getLastCallSceneName', dsGetLastCallSceneName);
-app.use('/ds/processStructure', dsProcessStructure);
-app.use('/v2', apiv2);
+app.use('/', routes);
 
 
 /* Catch 404 and Forward to Error Handler */

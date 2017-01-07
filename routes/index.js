@@ -9,4 +9,7 @@ router.get('/', (req, res) => {
     });
 });
 
+router.use('/ds', require('./ds'));
+router.use('/v2', require('./v2'));
+
 module.exports = router;

@@ -5,7 +5,6 @@ const https = require('https');
 const router = express.Router();
 const connector = require('../../utils/connector');
 
-
 router.get('/', (req, res) => {
 
     const {
