@@ -10,6 +10,7 @@ const index = require('./routes/index');
 const dsApi = require('./routes/ds/api');
 const dsGetLastCallSceneName = require('./routes/ds/getLastCallSceneName');
 const dsProcessStructure = require('./routes/ds/processStructure');
+const apiv2 = require('./routes/v2');
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use('/', index);
 app.use('/ds/api', dsApi);
 app.use('/ds/getLastCallSceneName', dsGetLastCallSceneName);
 app.use('/ds/processStructure', dsProcessStructure);
+app.use('/v2', apiv2);
 
 
 /* Catch 404 and Forward to Error Handler */
