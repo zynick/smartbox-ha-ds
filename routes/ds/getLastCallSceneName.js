@@ -8,8 +8,10 @@ const connector = require('../../utils/connector');
 
 router.get('/', (req, res) => {
 
-    const id = req.query.id || '';
-    const groupID = req.query.groupID || '';
+    const {
+        id = '',
+        groupID = ''
+    } = req.query;
 
     // 1. get last call scene id
     let path = `/json/zone/getLastCalledScene?id=${id}&groupID=${groupID}`;

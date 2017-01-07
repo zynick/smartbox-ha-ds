@@ -7,7 +7,9 @@ const connector = require('../../utils/connector');
 
 router.get('/', (req, res) => {
 
-    const path = req.query.path || '';
+    const {
+        path = ''
+    } = req.query;
 
     connector(path, (err, json) => {
         if (err) {

@@ -9,13 +9,14 @@ const bodyParser = require('body-parser');
 const index = require('./routes/index');
 const dsApi = require('./routes/ds/api');
 const dsGetLastCallSceneName = require('./routes/ds/getLastCallSceneName');
+const dsProcessStructure = require('./routes/ds/processStructure');
 
 const app = express();
 
 
 /* View Engine Setup */
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 
 /* App Stacks */
@@ -33,6 +34,7 @@ app.use(cookieParser());
 app.use('/', index);
 app.use('/ds/api', dsApi);
 app.use('/ds/getLastCallSceneName', dsGetLastCallSceneName);
+app.use('/ds/processStructure', dsProcessStructure);
 
 
 /* Catch 404 and Forward to Error Handler */
