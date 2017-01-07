@@ -27,44 +27,39 @@ router.get('/', (req, res) => {
             zones
         } = json.result.apartment;
 
-        const isPresent = (value) => {
-            return value.isPresent;
-        };
+        const isPresent = value => value.isPresent;
+
+        const notBroadcast = value => value.id !== 0;
 
         zones
-            .filter(isPresent)
-            .forEach((zone) => {
-                let devices = zone.devices.filter(isPresent);
+            .filter(notBroadcast)
+            .forEach(zone => {
+
+                let presentDevices = zone.devices.filter(isPresent);
+
                 let groups = zone.groups
+                    .filter(notBroadcast)
                     .filter(isPresent)
-                    .filter((group) => {
-                        return group.devices.length > 0;
-                    })
-                    .filter((group) => {
-                        // find present group that contains present devices
-                        return group.devices.find((dSUID) => {
-                            return devices.find((device) => {
+                    .filter(group => {
+                        // find group that contains present devices
+                        return group.devices.find(dSUID => {
+                            return presentDevices.find(device => {
                                 return device.dSUID === dSUID;
                             });
                         });
                     });
 
+                const zoneName = zone.name.length > 0 ? zone.name : `Room #${zone.id}`;
+
                 // show existing live zones & groups
-                console.log(`Active Zone: ${zone.name}`);
-                groups.forEach((group) => {
+                console.log(`Active Zone: ${zoneName}`);
+                groups.forEach(group => {
                     console.log(`    Active Group: ${group.name}`);
                 });
 
-                // TODO test it
-                // TODO test it
-                // TODO test it
-                // TODO test it
-                // TODO test it
-                // TODO test it
-                // TODO test it
-                // TODO test it
-
             });
+
+        res.send('ok');
     });
 
 });
