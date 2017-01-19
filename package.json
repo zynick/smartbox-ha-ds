@@ -3,8 +3,8 @@
     "version": "0.0.1",
     "private": true,
     "scripts": {
-        "dev": "DEBUG=app:* node ./bin/www",
-        "start": "DEBUG=app:error node ./bin/www"
+        "dev": "NODE_ENV=development PORT=3000 DEBUG=ds:* node ./bin/www",
+        "start": "NODE_ENV=production PORT=3000 DEBUG=ds:error node ./bin/www"
     },
     "dependencies": {
         "body-parser": "~1.13.2",

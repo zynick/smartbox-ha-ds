@@ -11,9 +11,9 @@
 
 // copy & modify from https://gitlab.com/smartboxasia/event-server/blob/master/api/dsConnector.js
 
-const debug = require('debug')('app:connector');
 const async = require('async');
 const https = require('https');
+const log = require('debug')('ds:connector');
 
 const {
     host,
@@ -28,7 +28,7 @@ let lastAccess = 0;
 
 
 const httpsGet = (url, next) => {
-    debug(url);
+    log(url);
 
     https
         .get(url, (res) => {
@@ -45,7 +45,7 @@ const httpsGet = (url, next) => {
                         return next(new Error(`dS Response ${res.statusCode}: ${json.message}`));
                     }
 
-                    debug(JSON.stringify(json));
+                    log(JSON.stringify(json));
                     next(null, json);
                 })
                 .on('error', next);
@@ -62,7 +62,7 @@ module.exports = (href, next) => {
         (next) => {
             // token is not expired if last used < 60 seconds
             if (lastAccess > Date.now() - 60000) {
-                debug(' * skip token validation');
+                log(' * skip token validation');
                 return next(null, true);
             }
 
@@ -76,7 +76,7 @@ module.exports = (href, next) => {
             }
 
             // refresh (get new) token
-            debug(' * refresh token');
+            log(' * refresh token');
             const url = `https://${host}:${port}/json/system/loginApplication?loginToken=${appToken}`;
             httpsGet(url, (err, json) => {
                 if (err) {
