@@ -1,5 +1,9 @@
 'use strict';
 
+// TODO should move to controller instead
+// TODO should move to controller instead
+// TODO should move to controller instead
+
 /**
  * Trigger URL to dS server and
  * Ensure connectivity by refresh session token automatically
