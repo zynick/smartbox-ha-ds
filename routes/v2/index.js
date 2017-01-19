@@ -2,32 +2,27 @@
 
 const express = require('express');
 const router = express.Router();
-const isProd = express().get('env') === 'production';
+const isProd = process.env.NODE_ENV === 'production';
 
 router.use('/getStructure', require('./getStructure'));
 
-/* Catch 404 and Forward to Error Handler */
+
+/* 404 & Error Handlers */
 router.use((req, res, next) => {
-    let err = new Error('Not Found');
+    const err = new Error('Not Found');
     err.status = 404;
     next(err);
 });
 
-/* Error Handlers */
 router.use((err, req, res, next) => {
-    let result = {
-        status: err.status || 500,
-        message: err.message || 'Internal Server Error',
-    };
+    const status = err.status || 500;
+    const message = err.message || 'Internal Server Error';
+    const error = { status, message };
     // hide stacktrace in production, show otherwise
-    if (!isProd) {
-        result.stack = err.stack;
-    }
+    if (!isProd) { error.stack = err.stack; }
     res
-        .status(result.status)
-        .json({
-            error: result
-        });
+        .status(status)
+        .json({ error });
 });
 
 

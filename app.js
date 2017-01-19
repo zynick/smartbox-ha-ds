@@ -1,52 +1,45 @@
 'use strict';
 
-const express = require('express');
-const path = require('path');
-const logger = require('morgan');
-const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const express = require('express');
+const morgan = require('morgan');
+const path = require('path');
 
-const routes = require('./routes');
 const app = express();
+const routes = require('./routes');
+const isProd = process.env.NODE_ENV === 'production';
 
 
-/* View Engine Setup */
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-
-
-/* App Stacks */
-app.use(logger('dev'));
+app.use(morgan('common'));
 app.use(bodyParser.json()); // parse application/json
-app.use(bodyParser.urlencoded({ // parse application/x-www-form-urlencoded
-    extended: false
-}));
-// parse text/plain
-// parse stupid python input (homeAssistant that does not contain content-type) as a string
+app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
 app.use(bodyParser.text({
+    // parse text/plain &
+    // parse stupid python input (homeAssistant that does not contain content-type) as a string
     type: req => req.headers['content-type'] === 'text/plain' || req.headers['accept-encoding'] === 'gzip, deflate'
 }));
 app.use(cookieParser());
 app.use('/', routes);
 
 
-/* Catch 404 and Forward to Error Handler */
+/* 404 & Error Handlers */
 app.use((req, res, next) => {
-    let err = new Error('Not Found');
+    const err = new Error('Not Found');
     err.status = 404;
     next(err);
 });
 
-
-/* Error Handlers */
 app.use((err, req, res, next) => {
-    res.status(err.status || 500);
-    // only print stacktrace in development, hide in production
-    err = app.get('env') === 'development' ? err : {};
-    res.render('error', {
-        message: err.message,
-        error: err
-    });
+    const status = err.status || 500;
+    const message = err.message || 'Internal Server Error';
+    // hide error in production, show otherwise
+    const error = isProd ? {} : err;
+    res
+        .status(status)
+        .render('error', { message, error });
 });
 
 
