@@ -8,7 +8,7 @@ const morgan = require('morgan');
 
 const log = debug('ds:app');
 const logError = debug('ds:error');
-const routes = require('./routes');
+const routes = require('./routes/index.js');
 const { PORT } = require('./config.js');
 
 

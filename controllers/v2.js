@@ -1,10 +1,9 @@
 'use strict';
 
-const router = require('express').Router();
 const connector = require('../lib/connector');
 
-
-router.get('/zones', (req, res, next) => {
+// obsolete. equally same as getReachableGroups (curl "http://localhost:3000/ds/api?path=/json/apartment/getReachableGroups" | jq)
+const getZones = (req, res, next) => {
 
   let path = `/json/apartment/getStructure`;
   connector(path, (err, json) => {
@@ -50,7 +49,6 @@ router.get('/zones', (req, res, next) => {
 
     res.json(_zones);
   });
-});
+};
 
-
-module.exports = router;
+module.exports = { getZones };

@@ -3,6 +3,8 @@
 const router = require('express').Router();
 const { NODE_ENV } = require('../config.js');
 const controller = require('../controllers/index.js');
+const ds = require('../controllers/ds.js');
+const v2 = require('../controllers/v2.js');
 
 
 if (NODE_ENV !== 'production') {
@@ -10,8 +12,13 @@ if (NODE_ENV !== 'production') {
 }
 
 router.get('/', controller.index);
-router.use('/ds', require('./ds'));
-router.use('/v2', require('./v2'));
+
+router.get('/ds/api', ds.getApi);
+router.get('/ds/getLastCallSceneName', ds.getLastCallSceneId, ds.getLastCallSceneName);
+router.use('/ds', ds.errorHandler);
+
+router.use('/v2/zones', v2.getZones);
+
 router.use(controller.notFound);
 router.use(controller.errorHandlerJSON);
 
