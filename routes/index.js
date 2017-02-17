@@ -13,13 +13,19 @@ if (NODE_ENV !== 'production') {
 
 router.get('/', controller.index);
 
+// TODO create a token and validate the token in order to access api below
+// but doing this will break api call from home-assistant...
+
 // version 1
 router.get('/ds/api', ds.getApi);
-router.get('/ds/getLastCallSceneName', ds.getLastCallSceneId, ds.getLastCallSceneName);
+router.get('/ds/getLastCallSceneName',
+  ds.getLastCallSceneId,
+  ds.getLastCallSceneName);
 router.use('/ds', ds.errorHandler);
 
 // version 2
-router.use('/v2/zones', v2.getZones);
+router.get('/v2/zones', v2.getZones);
+router.get('/v2/structure', ...v2.structure);
 
 router.use(controller.notFound);
 router.use(controller.errorHandlerJSON);
