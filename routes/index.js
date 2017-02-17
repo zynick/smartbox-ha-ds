@@ -13,10 +13,12 @@ if (NODE_ENV !== 'production') {
 
 router.get('/', controller.index);
 
+// version 1
 router.get('/ds/api', ds.getApi);
 router.get('/ds/getLastCallSceneName', ds.getLastCallSceneId, ds.getLastCallSceneName);
 router.use('/ds', ds.errorHandler);
 
+// version 2
 router.use('/v2/zones', v2.getZones);
 
 router.use(controller.notFound);
