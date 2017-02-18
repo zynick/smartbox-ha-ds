@@ -1,6 +1,6 @@
 'use strict';
 
-const log = require('debug')('sb:controllers');
+const log = require('debug')('ds:controllers');
 const { NODE_ENV } = require('../config.js');
 const { version } = require('../package.json');
 
