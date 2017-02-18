@@ -25,7 +25,6 @@ router.get('/ds/getLastCallSceneName',
 router.use('/ds', ds.errorHandler);
 
 // version 2
-router.get('/v2/zones', v2.getZones);
 router.get('/v2/structure', ...v2.structure);
 
 router.use(controller.notFound);

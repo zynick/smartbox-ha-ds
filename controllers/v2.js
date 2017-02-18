@@ -3,59 +3,7 @@
 const connector = require('../lib/connector');
 
 
-// obsolete. equally same as getReachableGroups (curl "http://localhost:3000/ds/api?path=/json/apartment/getReachableGroups" | jq)
-const getZones = (req, res, next) => {
-
-  connector(`/json/apartment/getStructure`,
-    (err, json) => {
-      if (err) {
-        return next(err);
-      }
-
-      const isPresent = value => value.isPresent;
-      const notBroadcast = value => value.id !== 0;
-      let { zones } = json.result.apartment;
-      let _zones = [];
-
-      zones
-        .filter(notBroadcast)
-        .forEach(zone => {
-
-          let presentDevices = zone.devices.filter(isPresent);
-          let groups = zone.groups
-            .filter(notBroadcast)
-            .filter(isPresent)
-            .filter(group =>
-              // find group that contains present devices
-              group.devices.find(dSUID =>
-                presentDevices.find(device =>
-                  device.dSUID === dSUID
-                )
-              )
-            );
-
-          let _groups = [];
-          groups.forEach(group => {
-            const { id, name, color } = group;
-            _groups.push({ id, name, color })
-          });
-
-          const zoneName = zone.name.length > 0 ? zone.name : `Room #${zone.id}`;
-          _zones.push({
-            id: zone.id,
-            name: zoneName,
-            groups: _groups
-          });
-        });
-
-      res.json(_zones);
-    });
-};
-
-
-
-
-const getReachableGroups = (req, res, next) => {
+const stackGetReachableGroups = (req, res, next) => {
   connector(`/json/apartment/getReachableGroups`,
     (err, json) => {
       if (err) {
@@ -66,7 +14,7 @@ const getReachableGroups = (req, res, next) => {
     });
 };
 
-const getScenes = (req, res, next) => {
+const stackGetScenes = (req, res, next) => {
   // connector(`/json/property/query?query=/apartment/zones/{*}(ZoneID)/groups/{*}(group)/scenes/{*}(scene,name)`,
   connector(`/json/property/query2?query=/apartment/zones/*(scenes)/groups/*(scenes)/scenes/*(name)`,
     (err, json) => {
@@ -79,7 +27,7 @@ const getScenes = (req, res, next) => {
     });
 };
 
-const getDevices = (req, res, next) => {
+const stackGetDevices = (req, res, next) => {
   // connector(`/json/property/query?query=/apartment/zones/{*}(ZoneID)/groups/{*}(group)/devices/{*}(dSID,name,present)`,
   connector(`/json/property/query2?query=/apartment/zones/*(scenes)/groups/*(scenes)/devices/*(dSID,name,present)`,
     (err, json) => {
@@ -104,7 +52,7 @@ const _deviceObj2Arr = (devices) => {
   return array;
 };
 
-const mergeStructure = (req, res, next) => {
+const stackMergeStructure = (req, res, next) => {
   const { structure, structScenes, structDevices } = req;
 
   structure.forEach(zone => {
@@ -124,19 +72,18 @@ const mergeStructure = (req, res, next) => {
   next();
 };
 
-const respond = (req, res) => {
+const stackResponse = (req, res) => {
   res.json(req.structure);
 };
 
 
 
 module.exports = {
-  getZones,
   structure: [
-    getReachableGroups,
-    getScenes,
-    getDevices,
-    mergeStructure,
-    respond
+    stackGetReachableGroups,
+    stackGetScenes,
+    stackGetDevices,
+    stackMergeStructure,
+    stackResponse
   ]
 };
