@@ -15,6 +15,7 @@ router.get('/', controller.index);
 
 // TODO create a token and validate the token in order to access api below
 // but doing this will break api call from home-assistant...
+// but still it's requried for security purposes
 
 // version 1
 router.get('/ds/api', ds.getApi);
