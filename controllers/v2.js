@@ -3,7 +3,7 @@
 const connector = require('../lib/connector');
 
 
-const stackGetReachableGroups = (req, res, next) => {
+const structGetReachableGroups = (req, res, next) => {
   connector(`/json/apartment/getReachableGroups`,
     (err, json) => {
       if (err) {
@@ -14,7 +14,7 @@ const stackGetReachableGroups = (req, res, next) => {
     });
 };
 
-const stackGetScenes = (req, res, next) => {
+const structGetScenes = (req, res, next) => {
   // connector(`/json/property/query?query=/apartment/zones/{*}(ZoneID)/groups/{*}(group)/scenes/{*}(scene,name)`,
   connector(`/json/property/query2?query=/apartment/zones/*(scenes)/groups/*(scenes)/scenes/*(name)`,
     (err, json) => {
@@ -27,7 +27,7 @@ const stackGetScenes = (req, res, next) => {
     });
 };
 
-const stackGetDevices = (req, res, next) => {
+const structGetDevices = (req, res, next) => {
   // connector(`/json/property/query?query=/apartment/zones/{*}(ZoneID)/groups/{*}(group)/devices/{*}(dSID,name,present)`,
   connector(`/json/property/query2?query=/apartment/zones/*(scenes)/groups/*(scenes)/devices/*(dSID,name,present)`,
     (err, json) => {
@@ -52,11 +52,12 @@ const _deviceObj2Arr = (devices) => {
   return array;
 };
 
-const stackMergeStructure = (req, res, next) => {
+const structMergeStructure = (req, res, next) => {
   const { structure, structScenes, structDevices } = req;
 
   structure.forEach(zone => {
     const { zoneID, groups } = zone;
+
     const _groups = [];
 
     groups.forEach(id => {
@@ -72,18 +73,30 @@ const stackMergeStructure = (req, res, next) => {
   next();
 };
 
-const stackResponse = (req, res) => {
-  res.json(req.structure);
+const _hasGroups = zone => zone.groups.length > 0;
+
+const _setDefaultZoneName = zone => {
+  if (zone.name === '') {
+    zone.name = `Room #${zone.zoneID}`;
+  }
+  return zone;
 };
 
+const structCleanStructure = (req, res, next) => {
+  let { structure } = req;
+  structure = structure.filter(_hasGroups);
+  structure = structure.map(_setDefaultZoneName);
+  req.structure = structure;
+  next();
+}
 
+const structResponse = (req, res) => res.json(req.structure);
 
 module.exports = {
-  structure: [
-    stackGetReachableGroups,
-    stackGetScenes,
-    stackGetDevices,
-    stackMergeStructure,
-    stackResponse
-  ]
+  structGetReachableGroups,
+  structGetScenes,
+  structGetDevices,
+  structMergeStructure,
+  structCleanStructure,
+  structResponse
 };

@@ -8,7 +8,7 @@ const v2 = require('../controllers/v2.js');
 
 
 if (NODE_ENV !== 'production') {
-    router.use(controller.debug);
+  router.use(controller.debug);
 }
 
 router.get('/', controller.index);
@@ -25,7 +25,14 @@ router.get('/ds/getLastCallSceneName',
 router.use('/ds', ds.errorHandler);
 
 // version 2
-router.get('/v2/structure', ...v2.structure);
+router.get('/v2/structure',
+  v2.structGetReachableGroups,
+  v2.structGetScenes,
+  v2.structGetDevices,
+  v2.structMergeStructure,
+  v2.structCleanStructure,
+  v2.structResponse
+);
 
 router.use(controller.notFound);
 router.use(controller.errorHandlerJSON);
