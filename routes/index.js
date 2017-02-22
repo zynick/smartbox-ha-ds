@@ -25,6 +25,8 @@ router.get('/ds/getLastCallSceneName',
 router.use('/ds', ds.errorHandler);
 
 // version 2
+router.get('/v2/api', ds.getApi);
+
 router.get('/v2/structure',
   v2.structGetReachableGroups,
   v2.structGetScenes,
