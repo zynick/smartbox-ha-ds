@@ -3,7 +3,7 @@
 const router = require('express').Router();
 const { NODE_ENV } = require('../config.js');
 const controller = require('../controllers/index.js');
-const ds = require('../controllers/ds.js');
+const v1 = require('../controllers/v1.js');
 const v2 = require('../controllers/v2.js');
 
 
@@ -13,19 +13,19 @@ if (NODE_ENV !== 'production') {
 
 router.get('/', controller.index);
 
-// TODO create a token and validate the token in order to access api below
+// TODO authentication in order to access api below
 // but doing this will break api call from home-assistant...
 // but still it's requried for security purposes
 
 // version 1
-router.get('/ds/api', ds.getApi);
+router.get('/ds/api', v1.getApi);
 router.get('/ds/getLastCallSceneName',
-  ds.getLastCallSceneId,
-  ds.getLastCallSceneName);
-router.use('/ds', ds.errorHandler);
+  v1.getLastCallSceneId,
+  v1.getLastCallSceneName);
+router.use('/ds', v1.errorHandler);
 
 // version 2
-router.get('/v2/api', ds.getApi);
+router.post('/v2/api', v2.postApi);
 
 router.get('/v2/structure',
   v2.structGetReachableGroups,

@@ -3,6 +3,19 @@
 const connector = require('../lib/connector');
 
 
+const postApi = (req, res, next) => {
+  const { path, parameters } = req.body;
+
+  connector(path, parameters,
+    (err, json) => {
+      if (err) {
+        return next(err);
+      }
+
+      res.json(json);
+    });
+};
+
 const structGetReachableGroups = (req, res, next) => {
   connector(`/json/apartment/getReachableGroups`,
     (err, json) => {
@@ -93,6 +106,7 @@ const structCleanStructure = (req, res, next) => {
 const structResponse = (req, res) => res.json(req.structure);
 
 module.exports = {
+  postApi,
   structGetReachableGroups,
   structGetScenes,
   structGetDevices,
